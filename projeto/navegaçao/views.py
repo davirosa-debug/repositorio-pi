@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
 
 def home(request):
     return render(request, 'home.html')
-
 
 def cadastrar(request):
     if request.method == "POST":
@@ -20,30 +18,30 @@ def cadastrar(request):
             return render(request, "cadastro.html", {"error": "E-mail já cadastrado"})
 
         User.objects.create_user(username=nome, email=email, password=senha)
-        return redirect("home")  
+        return redirect("home")
 
     return render(request, "cadastro.html")
 
 def logar(request):
- if request.method == "POST":
-     email = request.POST["email"]
-     senha = request.POST["senha"]
+    if request.method == "POST":
+        email = request.POST["email"]
+        senha = request.POST["senha"]
 
-     User = authenticate(request,username=email, password=senha)
-     if User is not None:
-         login(request,User)
-         return redirect("sessao")
-     else:
-         return render(request,"login.html",{"erro": "email ou senha  invalidos"})
-     return render(request,"login.html")
- 
- @login_required
- def sessao(request):
-     return render(request,"sessao.html")
- 
+        user = authenticate(request, username=email, password=senha)  # Correção do uso da variável 'User'
+        if user is not None:
+            login(request, user)
+            return redirect("sessao")
+        else:
+            return render(request, "login.html", {"erro": "Email ou senha inválidos"})
+    
+    return render(request, "login.html")
 
- def sair(request):
-     logout(request)
-     return redirect("logar")
+@login_required
+def sessao(request):
+    return render(request, "sessao.html")
+
+def sair(request):
+    logout(request)
+    return redirect("logar")
 
 
